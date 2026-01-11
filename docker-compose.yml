@@ -1,0 +1,43 @@
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_API_URL=http://localhost:3000
+    depends_on:
+      - backend
+    networks:
+      - referee-network
+
+  backend:
+    build: ./backend
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://${POSTGRES_USER:-user}:${POSTGRES_PASSWORD:-pass}@db:5432/${POSTGRES_DB:-referee}
+      - GROQ_API_KEY=${GROQ_API_KEY}
+    depends_on:
+      - db
+    networks:
+      - referee-network
+
+  db:
+    image: postgres:15
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER:-user}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-pass}
+      - POSTGRES_DB=${POSTGRES_DB:-referee}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    networks:
+      - referee-network
+
+networks:
+  referee-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
