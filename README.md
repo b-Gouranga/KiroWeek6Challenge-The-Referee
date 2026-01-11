@@ -1,6 +1,6 @@
 # The Referee - Decision Comparison Tool
 
-A web-based decision-comparison tool that helps users choose between technical options (APIs, cloud services, tech stacks, etc.) by presenting balanced trade-offs instead of single recommendations. Powered by Grok AI.
+A web-based decision-comparison tool that helps users choose between technical options (APIs, cloud services, tech stacks, etc.) by presenting balanced trade-offs instead of single recommendations. Powered by Groq AI.
 
 ## Architecture
 
@@ -15,7 +15,7 @@ A web-based decision-comparison tool that helps users choose between technical o
 │                             │                                   │
 │                             ▼                                   │
 │                      ┌──────────────┐                          │
-│                      │   Grok AI    │                          │
+│                      │   Groq AI    │                          │
 │                      │   (External) │                          │
 │                      └──────────────┘                          │
 └─────────────────────────────────────────────────────────────────┘
@@ -26,14 +26,14 @@ A web-based decision-comparison tool that helps users choose between technical o
 - **Frontend**: React + TypeScript + Vite + Tailwind CSS + shadcn/ui
 - **Backend**: Express.js + TypeScript
 - **Database**: PostgreSQL 15
-- **AI**: Grok AI for generating neutral comparisons
+- **AI**: Groq AI (LLaMA 3.3 70B) for generating neutral comparisons
 
 ## Quick Start
 
 ### Prerequisites
 
 - Docker and Docker Compose installed
-- Grok API key (obtain from [xAI](https://x.ai/))
+- Groq API key (obtain from [Groq Console](https://console.groq.com/))
 
 ### Setup
 
@@ -48,9 +48,9 @@ A web-based decision-comparison tool that helps users choose between technical o
    cp .env.example .env
    ```
 
-3. Edit `.env` and add your Grok API key:
+3. Edit `.env` and add your Groq API key:
    ```
-   GROK_API_KEY=your_actual_api_key_here
+   GROQ_API_KEY=your_actual_api_key_here
    ```
 
 4. Start all services:
@@ -67,7 +67,8 @@ A web-based decision-comparison tool that helps users choose between technical o
 
 | Variable | Service | Description | Default |
 |----------|---------|-------------|---------|
-| `GROK_API_KEY` | backend | API key for Grok AI | (required) |
+| `GROQ_API_KEY` | backend | API key for Groq AI | (required) |
+| `GROQ_MODEL` | backend | Groq model to use | `llama-3.3-70b-versatile` |
 | `DATABASE_URL` | backend | PostgreSQL connection string | `postgresql://user:pass@db:5432/referee` |
 | `POSTGRES_USER` | db | Database username | `user` |
 | `POSTGRES_PASSWORD` | db | Database password | `pass` |
@@ -123,7 +124,7 @@ Check system health and connectivity.
 {
   "status": "healthy",
   "database": "connected",
-  "grokApi": "connected",
+  "groqApi": "connected",
   "timestamp": "2025-01-11T12:00:00Z"
 }
 ```
@@ -200,7 +201,7 @@ referee-comparison-tool/
 ├── backend/                  # Express backend
 │   ├── src/
 │   │   ├── controllers/     # Request handlers
-│   │   ├── services/        # Business logic
+│   │   ├── services/        # Business logic (Groq integration)
 │   │   ├── utils/           # Helpers (prompt builder, normalizer)
 │   │   ├── middleware/      # Validation middleware
 │   │   └── db/              # Database connection
@@ -221,12 +222,14 @@ The Referee never declares a "winner". Instead, it presents:
 
 This approach empowers users to make informed decisions based on their specific context.
 
-### Why Grok AI?
+### Why Groq AI?
 
-Grok AI was chosen because:
-1. High-quality, nuanced responses for technical comparisons
-2. Ability to follow structured prompting for neutral analysis
-3. Handles complex multi-factor analysis effectively
+Groq AI was chosen because:
+1. Extremely fast inference speeds (fastest LLM inference available)
+2. High-quality responses using LLaMA 3.3 70B model
+3. OpenAI-compatible API format for easy integration
+4. Cost-effective for real-time comparisons
+5. Reliable JSON output formatting
 
 ## Troubleshooting
 
@@ -236,9 +239,10 @@ Grok AI was chosen because:
 - Ensure PostgreSQL container is running: `docker-compose ps`
 - Check database credentials in `.env`
 
-**Grok API errors:**
-- Verify `GROK_API_KEY` is set correctly
-- Check API key validity and rate limits
+**Groq API errors:**
+- Verify `GROQ_API_KEY` is set correctly (no trailing spaces or backslashes)
+- Check API key validity at https://console.groq.com/
+- Check rate limits on your Groq account
 
 **Frontend can't reach backend:**
 - Ensure backend is running on port 3000
